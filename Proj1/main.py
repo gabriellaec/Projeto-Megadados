@@ -157,6 +157,7 @@ response_description="Adicionando nota",
 response_model=schemas.Nota,
 tags=["notas"]
 )
+
 def create_nota(
     nome_disciplina: str, nota: schemas.NotaCreate, db: Session = Depends(get_db)
 ):
@@ -190,7 +191,7 @@ response_description="Listando as notas",
 response_model=schemas.Nota,
 tags=["notas"]
 )
-def get_nota_by_disciplina(nome_disciplina: str, db: Session = Depends(get_db)):
+def check_notas_disciplina(nome_disciplina: str, db: Session = Depends(get_db)):
     """
      Lê todas as notas de uma disciplina
     - **nome_disciplina**: Nome da disciplina em que estão as notas
@@ -200,7 +201,7 @@ def get_nota_by_disciplina(nome_disciplina: str, db: Session = Depends(get_db)):
     if db_disciplina is None:
         raise HTTPException(status_code=404, detail="Disciplina não encontrada!")
 
-    db_disciplina = crud.get_nota_by_disciplina(db, nome=nome_disciplina)
+    db_disciplina = crud.check_notas_disciplina(db, nome=nome_disciplina)
     if db_disciplina is None:
         raise HTTPException(status_code=404, detail="Você não tem notas para esta disciplina!")
 
@@ -211,26 +212,27 @@ def get_nota_by_disciplina(nome_disciplina: str, db: Session = Depends(get_db)):
 ##########################################################
 #U • O usuário pode modificar uma nota de uma disciplina
 ##########################################################
-@app.patch("/disciplina/{nome_disciplina}/notas", 
+@app.patch("/disciplina/{nome_disciplina}/notas" ,
 status_code=status.HTTP_200_OK,
 summary="Atualizar nota",
 response_description="Atualizando nota",
-response_model=schemas.Nota,
 tags=["notas"]
 )
-async def update_nota(
-    titulo: str, nome_disciplina: str, infos: schemas.NotaUpdate, db: Session = Depends(get_db)    
-    ):
-    """
+
+def update_nota(titulo: str, nome_disciplina: str, descricao: str, db: Session = Depends(get_db)):
+    """ 
     Atualiza uma nota de determinada matéria
     - **nome_disciplina**: A disciplina cuja nota vai ser alterada
     - **nome_titulo**: O título da nota a ser alterada
     - **nova_nota**: A nova nota a ser salva
     """
-    db_disciplina = crud.get_nota_by_disciplina(db, nome=nome_disciplina)
+    print("oii")
+
+    db_disciplina = crud.check_notas_disciplina(db, nome=nome_disciplina)
     if db_disciplina is None:
         raise HTTPException(status_code=404, detail="Nota não encontrada!")
-    return update_nota(db, infos, titulo, nome_disciplina)
+    print("olaa")
+    return crud.update_nota(db=db, descricao=descricao, titulo=titulo, disciplina=nome_disciplina)
 
 
 #######################################
@@ -240,18 +242,24 @@ async def update_nota(
 status_code=status.HTTP_200_OK,
 summary="Deletar nota",
 response_description="Deletando nota",
-response_model=schemas.Nota,
 tags=["notas"]
 )
 def delete_nota(
-    titulo: str, nome_disciplina: str, db: Session = Depends(get_db)    
-    ):
+    titulo: str, nome_disciplina: str, db: Session = Depends(get_db)):
     """
     Deleta uma nota de determinada matéria
     - **nome_disciplina**: A disciplina em que a nota a ser deletada está
     - **nome_titulo**: O título cuja nota se deseja deletar
     """
-    db_disciplina = crud.get_nota_by_disciplina(db, nome=nome_disciplina)
+    db_disciplina = crud.get_disciplina_by_name(db, nome=nome_disciplina)
     if db_disciplina is None:
+        raise HTTPException(status_code=404, detail="Disciplina não encontrada!")
+
+    db_disciplina = crud.get_nota_by_disciplina(db, nome=nome_disciplina, titulo=titulo)
+    print("--------------------------------------")
+    if db_disciplina is None:
+        print("***********************************")
+
         raise HTTPException(status_code=404, detail="Nota não encontrada!")
+
     return crud.delete_nota(db, titulo=titulo, disciplina=nome_disciplina)

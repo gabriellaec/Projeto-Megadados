@@ -10,8 +10,11 @@ def get_disciplina_by_name(db: Session, nome: str):
     return db.query(models.Disciplinas).filter(models.Disciplinas.name == nome).first()
 
 
-def get_nota_by_disciplina(db: Session, nome: str):
+def check_notas_disciplina(db: Session, nome: str):
     return db.query(models.Notas).filter(models.Notas.disciplina == nome).first()
+
+def get_nota_by_disciplina(db: Session, nome: str, titulo: str):
+    return db.query(models.Notas).filter(models.Notas.disciplina == nome, models.Notas.titulo == titulo).first()
 
 
 def create_disciplina(db: Session, disciplina: schemas.DisciplinaCreate):
@@ -53,9 +56,9 @@ def update_disciplina(db: Session, infos: schemas.DisciplinaUpdate, nome: str):
     return db_disciplina
 
 
-def update_nota(db: Session, infos: schemas.NotaUpdate, titulo: str, disciplina: str):
+def update_nota(db: Session, descricao: str, titulo: str, disciplina: str):
     db_nota = db.query(models.Notas).filter((models.Notas.disciplina == str(disciplina)), (models.Notas.titulo == str(titulo))).first()
-    db_nota.descricao = infos.descricao
+    db_nota.descricao = descricao
     db.commit()
     db.refresh(db_nota)
     return db_nota
