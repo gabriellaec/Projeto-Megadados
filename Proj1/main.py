@@ -256,10 +256,7 @@ def delete_nota(
         raise HTTPException(status_code=404, detail="Disciplina não encontrada!")
 
     db_disciplina = crud.get_nota_by_disciplina(db, nome=nome_disciplina, titulo=titulo)
-    print("--------------------------------------")
     if db_disciplina is None:
-        print("***********************************")
-
         raise HTTPException(status_code=404, detail="Nota não encontrada!")
 
     return crud.delete_nota(db, titulo=titulo, disciplina=nome_disciplina)

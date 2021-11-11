@@ -39,11 +39,14 @@ def create_nota(db: Session, nota: schemas.NotaCreate, disciplina: str):
 
 
 def delete_disciplina(db: Session, nome: str):
-    return db.query(models.Disciplinas).filter(models.Disciplinas.name == nome).delete()
+    deleted = db.query(models.Disciplinas).filter(models.Disciplinas.name == nome).delete()
+    db.commit()
+    return deleted
     
 def delete_nota(db: Session, titulo: str, disciplina: str):
-    return db.query(models.Notas).filter((models.Notas.titulo == titulo), (models.Notas.disciplina == disciplina)).delete()
-    
+    deleted = db.query(models.Notas).filter((models.Notas.titulo == titulo), (models.Notas.disciplina == disciplina)).delete()
+    db.commit()
+    return deleted
 
 def update_disciplina(db: Session, infos: schemas.DisciplinaUpdate, nome: str):
     db_disciplina = db.query(models.Disciplinas).filter(models.Disciplinas.name == str(nome)).first()
