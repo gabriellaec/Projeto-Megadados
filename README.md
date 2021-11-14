@@ -14,6 +14,7 @@ pip install "uvicorn[standard]"
 
 pip install sqlalchemy_utils
 
+pip install pymysql
 
 ## Rodando o projeto:
 uvicorn Proj1.main:app --reload
