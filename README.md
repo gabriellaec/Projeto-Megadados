@@ -7,5 +7,13 @@ ATENÇÃO: O arquivo secrets.py deste repositório é apenas um template
 
 ATENÇÃO2: Nunca divulgue as credenciais do banco de dados em um repositório
 
+## Bibliotecas necessárias
+pip install fastapi
+
+pip install "uvicorn[standard]"
+
+pip install sqlalchemy_utils
+
+
 ## Rodando o projeto:
 uvicorn Proj1.main:app --reload
