@@ -5,7 +5,7 @@ from sqlalchemy_utils.functions import database_exists, create_database
 import secrets
 
 
-SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{secrets.username}:{secrets.password}@localhost:3306/Projeto1"
+SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{secrets.username}:{secrets.password}@localhost:3306/Projeto1-2"
 
 
 engine = create_engine(

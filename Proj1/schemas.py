@@ -12,7 +12,7 @@ class NotaCreate(NotaBase):
 
 class Nota(NotaBase):
     id: int
-    disciplina: str
+    disciplina: int
     class Config:
         orm_mode = True
 

@@ -8,7 +8,7 @@ class Notas(Base):
     __tablename__ = "notas"
 
     id = Column(Integer, primary_key=True, index=True)
-    disciplina = Column(VARCHAR(200), ForeignKey("disciplinas.name", ondelete="CASCADE", onupdate="CASCADE"))
+    disciplina = Column(Integer, ForeignKey("disciplinas.id", ondelete="CASCADE"))
     titulo = Column(VARCHAR(200), unique=True, index=True)
     descricao = Column(VARCHAR(200))
 

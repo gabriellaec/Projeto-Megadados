@@ -9,12 +9,16 @@ def get_disciplinas(db: Session):
 def get_disciplina_by_name(db: Session, nome: str):
     return db.query(models.Disciplinas).filter(models.Disciplinas.name == nome).first()
 
+def get_id_by_name(db: Session, name: str):
+    return db.query(models.Disciplinas).filter(models.Disciplinas.name == name).first().id
 
 def check_notas_disciplina(db: Session, nome: str):
-    return db.query(models.Notas).filter(models.Notas.disciplina == nome).first()
+    id=get_id_by_name(db, nome)
+    return db.query(models.Notas).filter(models.Notas.disciplina == id).all()
 
 def get_nota_by_disciplina(db: Session, nome: str, titulo: str):
-    return db.query(models.Notas).filter(models.Notas.disciplina == nome, models.Notas.titulo == titulo).first()
+    id=get_id_by_name(db, nome)
+    return db.query(models.Notas).filter(models.Notas.disciplina == id, models.Notas.titulo == titulo).first()
 
 
 def create_disciplina(db: Session, disciplina: schemas.DisciplinaCreate):
@@ -26,9 +30,10 @@ def create_disciplina(db: Session, disciplina: schemas.DisciplinaCreate):
 
 
 def create_nota(db: Session, nota: schemas.NotaCreate, disciplina: str):
-    db_nota = models.Notas(disciplina=disciplina, titulo=nota.titulo, descricao=nota.descricao)
+    id=get_id_by_name(db, disciplina)
+    db_nota = models.Notas(disciplina=id, titulo=nota.titulo, descricao=nota.descricao)
 
-    db_disciplina = db.query(models.Notas).filter( (models.Notas.disciplina == disciplina), (models.Notas.titulo == nota.titulo)).first()
+    db_disciplina = db.query(models.Notas).filter( (models.Notas.disciplina == id), (models.Notas.titulo == nota.titulo)).first()
 
     if db_disciplina is None:
         db.add(db_nota)
@@ -41,26 +46,40 @@ def create_nota(db: Session, nota: schemas.NotaCreate, disciplina: str):
 def delete_disciplina(db: Session, nome: str):
     deleted = db.query(models.Disciplinas).filter(models.Disciplinas.name == nome).delete()
     db.commit()
-    return deleted
+    if deleted:
+        return f"{nome} deletada com sucesso!"
+    else:
+        return "Não foi possível deletar a disciplina"
     
 def delete_nota(db: Session, titulo: str, disciplina: str):
-    deleted = db.query(models.Notas).filter((models.Notas.titulo == titulo), (models.Notas.disciplina == disciplina)).delete()
+    id=get_id_by_name(db, disciplina)
+    deleted = db.query(models.Notas).filter((models.Notas.titulo == titulo), (models.Notas.disciplina == id)).delete()
     db.commit()
-    return deleted
+    if deleted:
+        return f"{titulo} deletada com sucesso!"
+    else:
+        return "Não foi possível deletar a nota"
 
 def update_disciplina(db: Session, infos: schemas.DisciplinaUpdate, nome: str):
     db_disciplina = db.query(models.Disciplinas).filter(models.Disciplinas.name == str(nome)).first()
     if infos.name is not None:
-        db_disciplina.name = infos.name
+        if get_disciplina_by_name(db, infos.name) is None:
+            db_disciplina.name = infos.name
+        else:
+            return None
+            
     if infos.prof_name is not None:
-        db_disciplina.prof_name = infos.prof_name
+        db_disciplina.prof_name = infos.prof_name 
+    
     db.commit()
-    db.refresh(db_disciplina)
+    # db.refresh(db_disciplina)
+
     return db_disciplina
 
 
 def update_nota(db: Session, descricao: str, titulo: str, disciplina: str):
-    db_nota = db.query(models.Notas).filter((models.Notas.disciplina == str(disciplina)), (models.Notas.titulo == str(titulo))).first()
+    id=get_id_by_name(db, disciplina)
+    db_nota = db.query(models.Notas).filter((models.Notas.disciplina == id), (models.Notas.titulo == str(titulo))).first()
     db_nota.descricao = descricao
     db.commit()
     db.refresh(db_nota)
