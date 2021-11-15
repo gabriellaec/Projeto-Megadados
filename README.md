@@ -18,3 +18,8 @@ pip install pymysql
 
 ## Rodando o projeto:
 uvicorn Proj1.main:app --reload
+
+Entrar no site da documentação
+http://127.0.0.1:8000/docs#/
+
+Preencher os parâmetros para testar os métodos CRUD, conforme descrito nas instruções (se o valor for opcional, tirar a chave e o valor do dicionário JSON)
